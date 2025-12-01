@@ -29,3 +29,5 @@ PROJECT3/
   .gitignore
   README.md
   requirements.txt
+
+## How to Use
