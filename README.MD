@@ -29,5 +29,15 @@ PROJECT3/
   .gitignore
   README.md
   requirements.txt
-
+'''
 ## How to Use
+1. Run MQTT
+'''text
+"C:\Program Files\mosquitto\mosquitto.exe" -v -c "C:\Program Files\mosquitto\mosquitto.conf"
+'''
+2. For website
+'''text
+python -m app.main --listen-rssi --verbose
+'''
+
+
