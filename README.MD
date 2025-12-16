@@ -12,6 +12,7 @@ The overall design follows a **split-responsibility architecture**:
 ---
 
 ## System Overview
+### Structure
 
 ### Laptop-side Sensing and Processing
 
