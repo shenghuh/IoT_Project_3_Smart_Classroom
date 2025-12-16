@@ -82,8 +82,8 @@ PROJECT3/
   .gitignore
   README.md
   requirements.txt
+'''
 ---
-
 ## How to Run / Compile
 
 This project runs entirely on the laptop using Python.
