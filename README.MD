@@ -70,20 +70,6 @@ This keeps the embedded device simple and responsive, while leveraging the
 laptop’s higher computational power.
 
 ---
-
-## Project Structure
-
-```text
-PROJECT3/
-  app/
-    camera_processor.py   # Webcam brightness reader (grayscale mean)
-    mic_processor.py      # Microphone volume reader (RMS -> dB)
-    main.py               # Control loop, smoothing, and MQTT publishing
-  .gitignore
-  README.md
-  requirements.txt
-'''
----
 ## How to Run / Compile
 
 This project runs entirely on the laptop using Python.
@@ -102,3 +88,18 @@ From the project root directory, run:
 
 ```bash
 pip install -r requirements.txt
+
+---
+
+## Project Structure
+
+```text
+PROJECT3/
+  app/
+    camera_processor.py   # Webcam brightness reader (grayscale mean)
+    mic_processor.py      # Microphone volume reader (RMS -> dB)
+    main.py               # Control loop, smoothing, and MQTT publishing
+  .gitignore
+  README.md
+  requirements.txt
+
