@@ -1,0 +1,329 @@
+[
+    {
+        "id": "d60799d1187ec0f3",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0247c44c02cb19ab",
+        "type": "Generic BLE in",
+        "z": "d60799d1187ec0f3",
+        "name": "",
+        "genericBle": "cf929519035a5ac0",
+        "useString": true,
+        "notification": true,
+        "x": 370,
+        "y": 260,
+        "wires": [
+            [
+                "41bfd68f7cfab03c"
+            ]
+        ]
+    },
+    {
+        "id": "932eb676c7451aee",
+        "type": "debug",
+        "z": "d60799d1187ec0f3",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "86e8e777a63e1c3e",
+        "type": "inject",
+        "z": "d60799d1187ec0f3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "{\"notify\": true, \"period\": 0 }",
+        "payloadType": "json",
+        "x": 170,
+        "y": 260,
+        "wires": [
+            [
+                "0247c44c02cb19ab"
+            ]
+        ]
+    },
+    {
+        "id": "41bfd68f7cfab03c",
+        "type": "function",
+        "z": "d60799d1187ec0f3",
+        "name": "Random fake RSSI signal",
+        "func": "// === 極端跳動版本 Fake RSSI Signal ===\n// RSSI 範圍刻意設成非常極端：-120（超遠）到 -10（超近）\n\nconst MIN = -120;\nconst MAX = -10;\n\n// 每次完全亂跳，變動超明顯\nconst fakeRssi = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;\n\n// 先把原本 payload 保留下來\nlet payload = {};\n\n// 1️⃣ 如果是字串，嘗試視為 JSON 來解析\nif (typeof msg.payload === \"string\") {\n    try {\n        payload = JSON.parse(msg.payload);   // 例如 {\"brightness\":..., \"volume\":...}\n    } catch (e) {\n        // 解析失敗時就把原字串放在 raw 裡，避免資料完全消失\n        payload.raw = msg.payload;\n    }\n}\n// 2️⃣ 如果本來就是物件，直接複製欄位\nelse if (msg.payload && typeof msg.payload === \"object\") {\n    payload = { ...msg.payload };\n}\n\n// 3️⃣ 在原本欄位上「加上 / 覆蓋」 rssi & timestamp\npayload.rssi = fakeRssi;\npayload.timestamp = new Date().toISOString();\n\n// 4️⃣ 把結果塞回 msg.payload\nmsg.payload = payload;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 260,
+        "wires": [
+            [
+                "932eb676c7451aee",
+                "49d3aac12979fb8c",
+                "31c53be35fbe5cd2"
+            ]
+        ]
+    },
+    {
+        "id": "31c53be35fbe5cd2",
+        "type": "particle-publish",
+        "z": "d60799d1187ec0f3",
+        "name": "Publish Laptop Info",
+        "auth": "05b60343e8bb98f1",
+        "scope": "user",
+        "product": "",
+        "event": "Blesetting",
+        "x": 890,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "49d3aac12979fb8c",
+        "type": "mqtt out",
+        "z": "d60799d1187ec0f3",
+        "name": "",
+        "topic": "RSSI",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "f044e89d6153b276",
+        "x": 870,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "64b37d0f3e6bd420",
+        "type": "mqtt in",
+        "z": "d60799d1187ec0f3",
+        "name": "",
+        "topic": "smartclassroom/light_cmd",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "f044e89d6153b276",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 440,
+        "wires": [
+            [
+                "41bfd68f7cfab03c"
+            ]
+        ]
+    },
+    {
+        "id": "76825c1403b06280",
+        "type": "mqtt in",
+        "z": "d60799d1187ec0f3",
+        "name": "",
+        "topic": "smartclassroom/speaker_cmd",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "f044e89d6153b276",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 520,
+        "wires": [
+            [
+                "41bfd68f7cfab03c"
+            ]
+        ]
+    },
+    {
+        "id": "dc017066c6d07106",
+        "type": "comment",
+        "z": "d60799d1187ec0f3",
+        "name": "Generate Random BLE RSSI signal",
+        "info": "",
+        "x": 220,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "0a9366a4ad8be47e",
+        "type": "comment",
+        "z": "d60799d1187ec0f3",
+        "name": "Send adjustment info",
+        "info": "",
+        "x": 180,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "48aa3505f89aae9f",
+        "type": "comment",
+        "z": "d60799d1187ec0f3",
+        "name": "Output: MQTT, Particle, Debug Window",
+        "info": "",
+        "x": 850,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "cf929519035a5ac0",
+        "type": "Generic BLE",
+        "localName": "Photon 2-067048\u0000",
+        "address": "94:94:4a:06:70:49",
+        "uuid": "94944a067049",
+        "characteristics": [
+            {
+                "uuid": "2a05",
+                "name": "Service Changed",
+                "type": "org.bluetooth.characteristic.gatt.service_changed",
+                "notifiable": false,
+                "readable": false,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "2a00",
+                "name": "Device Name",
+                "type": "org.bluetooth.characteristic.gap.device_name",
+                "notifiable": false,
+                "readable": true,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "2a01",
+                "name": "Appearance",
+                "type": "org.bluetooth.characteristic.gap.appearance",
+                "notifiable": false,
+                "readable": true,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "2a04",
+                "name": "Peripheral Preferred Connection Parameters",
+                "type": "org.bluetooth.characteristic.gap.peripheral_preferred_connection_parameters",
+                "notifiable": false,
+                "readable": true,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "6fa900025c4e48a894f48030546f36fc",
+                "name": "<Unnamed>",
+                "type": "(Custom Type)",
+                "notifiable": false,
+                "readable": true,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "6fa900035c4e48a894f48030546f36fc",
+                "name": "<Unnamed>",
+                "type": "(Custom Type)",
+                "notifiable": true,
+                "readable": false,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "6fa900045c4e48a894f48030546f36fc",
+                "name": "<Unnamed>",
+                "type": "(Custom Type)",
+                "notifiable": false,
+                "readable": false,
+                "writable": true,
+                "writeWithoutResponse": true
+            },
+            {
+                "uuid": "2a1c",
+                "name": "Temperature Measurement",
+                "type": "org.bluetooth.characteristic.temperature_measurement",
+                "notifiable": true,
+                "readable": false,
+                "writable": false,
+                "writeWithoutResponse": false
+            },
+            {
+                "uuid": "2a19",
+                "name": "Battery Level",
+                "type": "org.bluetooth.characteristic.battery_level",
+                "notifiable": true,
+                "readable": false,
+                "writable": false,
+                "writeWithoutResponse": false
+            }
+        ]
+    },
+    {
+        "id": "05b60343e8bb98f1",
+        "type": "particle-config",
+        "clientId": "nodered-client-578",
+        "clientSecret": "893bd6dbe9f4ea447aaa4ef57c426073fdc32f51"
+    },
+    {
+        "id": "f044e89d6153b276",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "87f6a6ec90c99b94",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-generic-ble": "4.0.3",
+            "@particle/node-red-contrib-particle-official": "0.1.7"
+        }
+    }
+]
